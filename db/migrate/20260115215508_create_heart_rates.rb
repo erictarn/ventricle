@@ -5,9 +5,7 @@ class CreateHeartRates < ActiveRecord::Migration[8.1]
       t.integer :bpm
       t.datetime :start_time
       t.datetime :end_time
-      t.integer :duration
-
-      t.timestamps
+      t.integer :duration_in_secs
     end
   end
 end

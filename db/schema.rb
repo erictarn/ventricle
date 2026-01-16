@@ -13,28 +13,24 @@
 ActiveRecord::Schema[8.1].define(version: 2026_01_16_004001) do
   create_table "heart_rates", force: :cascade do |t|
     t.integer "bpm"
-    t.datetime "created_at", null: false
-    t.integer "duration"
+    t.integer "duration_in_secs"
     t.datetime "end_time"
     t.integer "monitoring_session_id"
     t.datetime "start_time"
-    t.datetime "updated_at", null: false
     t.index ["monitoring_session_id"], name: "index_heart_rates_on_monitoring_session_id"
   end
 
   create_table "monitoring_sessions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "duration"
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.integer "duration_in_secs"
     t.integer "user_id"
     t.index ["user_id"], name: "index_monitoring_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.integer "age"
-    t.datetime "created_at", null: false
+    t.datetime "created_at"
     t.string "gender"
-    t.datetime "updated_at", null: false
     t.string "username"
     t.integer "zone1_max"
     t.integer "zone1_min"

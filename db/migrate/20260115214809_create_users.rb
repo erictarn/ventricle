@@ -1,6 +1,7 @@
 class CreateUsers < ActiveRecord::Migration[8.1]
   def change
     create_table :users do |t|
+      t.datetime :created_at
       t.string :username
       t.string :gender
       t.integer :age
@@ -12,8 +13,6 @@ class CreateUsers < ActiveRecord::Migration[8.1]
       t.integer :zone3_max
       t.integer :zone4_min
       t.integer :zone4_max
-
-      t.timestamps
 
       t.index :username, unique: true #notable
     end
