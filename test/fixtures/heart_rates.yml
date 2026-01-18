@@ -1,11 +1,56 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/heart_rates.yml
+session_one_low:
+  monitoring_session_id: 1
+  bpm: 62
+  start_time: <%= 1.day.ago %>
+  end_time: <%= 1.day.ago + 5.minutes %>
+  duration_in_secs: 300
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+session_one_medium:
+  monitoring_session_id: 1
+  bpm: 75
+  start_time: <%= 1.day.ago + 5.minutes %>
+  end_time: <%= 1.day.ago + 10.minutes %>
+  duration_in_secs: 300
+
+session_one_high:
+  monitoring_session_id: 1
+  bpm: 88
+  start_time: <%= 1.day.ago + 10.minutes %>
+  end_time: <%= 1.day.ago + 15.minutes %>
+  duration_in_secs: 300
+
+session_one_another:
+  monitoring_session_id: 1
+  bpm: 70
+  start_time: <%= 1.day.ago + 15.minutes %>
+  end_time: <%= 1.day.ago + 20.minutes %>
+  duration_in_secs: 300
+
+session_two_low:
+  monitoring_session_id: 2
+  bpm: 50
+  start_time: <%= 2.days.ago %>
+  end_time: <%= 2.days.ago + 5.minutes %>
+  duration_in_secs: 300
+
+session_two_high:
+  monitoring_session_id: 2
+  bpm: 90
+  start_time: <%= 2.days.ago + 5.minutes %>
+  end_time: <%= 2.days.ago + 10.minutes %>
+  duration_in_secs: 300
+
+duplicate_min_one:
+  monitoring_session_id: 2
+  bpm: 60
+  start_time: <%= 2.days.ago + 10.minutes %>
+  end_time: <%= 2.days.ago + 15.minutes %>
+  duration_in_secs: 300
+
+duplicate_min_two:
+  monitoring_session_id: 2
+  bpm: 60
+  start_time: <%= 2.days.ago + 15.minutes %>
+  end_time: <%= 2.days.ago + 20.minutes %>
+  duration_in_secs: 300

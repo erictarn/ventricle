@@ -1,11 +1,45 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# test/fixtures/users.yml
+john:
+  id: 1
+  username: "john_doe"
+  age: 28
+  gender: "male"
+  created_at: <%= 30.days.ago %>
+  zone1_min: 50
+  zone1_max: 100
+  zone2_min: 100
+  zone2_max: 120
+  zone3_min: 120
+  zone3_max: 140
+  zone4_min: 140
+  zone4_max: 160
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+jane:
+  id: 2
+  username: "jane_smith"
+  age: 35
+  gender: "female"
+  created_at: <%= 45.days.ago %>
+  zone1_min: 55
+  zone1_max: 95
+  zone2_min: 95
+  zone2_max: 115
+  zone3_min: 115
+  zone3_max: 135
+  zone4_min: 135
+  zone4_max: 155
+
+bob:
+  id: 3
+  username: "bob_jones"
+  age: 42
+  gender: "male"
+  created_at: <%= 60.days.ago %>
+  zone1_min: 48
+  zone1_max: 90
+  zone2_min: 90
+  zone2_max: 110
+  zone3_min: 110
+  zone3_max: 130
+  zone4_min: 130
+  zone4_max: 150

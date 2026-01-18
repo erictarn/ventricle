@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_004001) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_17_231256) do
   create_table "heart_rates", force: :cascade do |t|
     t.integer "bpm"
     t.integer "duration_in_secs"
     t.datetime "end_time"
     t.integer "monitoring_session_id"
     t.datetime "start_time"
+    t.index ["bpm", "duration_in_secs"], name: "index_heart_rates_on_bpm_and_duration_in_secs"
+    t.index ["bpm"], name: "index_heart_rates_on_bpm"
     t.index ["monitoring_session_id"], name: "index_heart_rates_on_monitoring_session_id"
   end
 
