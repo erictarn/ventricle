@@ -14,13 +14,11 @@ class MonitoringSessionsController < ApplicationController
       date = Date.parse(params[:date])
       start_time = date.to_time.utc.beginning_of_day
       end_time = date.to_time.utc.end_of_day
-      @monitoring_sessions = @monitoring_sessions.where(created_at: start_time..end_time)
+      @monitoring_sessions = @monitoring_sessions.where(created_at: start_time..end_time).limit(500)
     end
 
     if params[:search].blank? && params[:date].blank?
       @monitoring_sessions = @monitoring_sessions.order(created_at: :desc).limit(10)
-    else
-      @monitoring_sessions = @monitoring_sessions.order(created_at: :desc)
     end
   end
 

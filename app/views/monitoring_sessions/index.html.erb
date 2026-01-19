@@ -91,37 +91,46 @@
       </div>
 
       <!-- Sessions Table -->
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead class="thead-dark">
-      <tr>
-        <th>Date</th>
-        <th>Username</th>
-        <th>Min HR</th>
-        <th>Avg HR</th>
-        <th>Max HR</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @monitoring_sessions.each do |m| %>
-        <tr>
-          <td><%= m.created_at.strftime("%b %d, %Y %l:%M %p") %></td>
-          <td><%= m.user.username %></td>
-          <td><%= m.min_hr %> bpm</td>
-          <td><%= m.avg_hr.to_f.round(1) %> bpm</td>
-          <td><%= m.max_hr %> bpm</td>
-          <td><%= link_to "View", monitoring_session_path(m), class: "btn btn-sm btn-primary" %></td>
-        </tr>
+      <% if @monitoring_sessions.empty? %>
+        <div class="alert alert-info text-center" role="alert">
+          No results found.
+        </div>
+      <% else %>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <th>Date</th>
+                <th>Username</th>
+                <th>Min HR</th>
+                <th>Avg HR</th>
+                <th>Max HR</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @monitoring_sessions.each do |m| %>
+                <tr>
+                  <td><%= m.created_at.strftime("%b %d, %Y %l:%M %p") %></td>
+                  <td><%= m.user.username %></td>
+                  <td><%= m.min_hr %> bpm</td>
+                  <td><%= m.avg_hr.to_f.round(1) %> bpm</td>
+                  <td><%= m.max_hr %> bpm</td>
+                  <td><%= link_to "View", monitoring_session_path(m), class: "btn btn-sm btn-primary" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
       <% end %>
-    </tbody>
-  </table>
-</div>
     </div>
   </div>
 </div>
 
 <script>
+// Store the handler function reference so we can remove it
+let refreshClickHandler = null;
+
 document.addEventListener('turbo:load', function() {
   const refreshLink = document.getElementById('refresh-link');
   const refreshSpinner = document.getElementById('refresh-spinner');
@@ -157,7 +166,13 @@ document.addEventListener('turbo:load', function() {
   }
 
   if (refreshLink) {
-    refreshLink.addEventListener('click', function(e) {
+    // Remove old event listener if it exists
+    if (refreshClickHandler) {
+      refreshLink.removeEventListener('click', refreshClickHandler);
+    }
+
+    // Define the click handler
+    refreshClickHandler = function(e) {
       e.preventDefault();
 
       // Show spinner, hide link
@@ -202,7 +217,18 @@ document.addEventListener('turbo:load', function() {
         refreshSpinner.classList.add('d-none');
         refreshLink.classList.remove('d-none');
       });
-    });
+    };
+
+    // Add the new event listener
+    refreshLink.addEventListener('click', refreshClickHandler);
+  }
+});
+
+// Clean up before Turbo caches the page
+document.addEventListener('turbo:before-cache', function() {
+  const refreshLink = document.getElementById('refresh-link');
+  if (refreshLink && refreshClickHandler) {
+    refreshLink.removeEventListener('click', refreshClickHandler);
   }
 });
 </script>
