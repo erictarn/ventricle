@@ -26,5 +26,4 @@ A heart rate reporting dashboard
 * Bootstrap and Chartkick for time
 * Put global data as a summary like system monitoring
 * Monitoring Sessions in order of most recent implies date is important so search by date, and also user why not, no need to paginate w/ 15m
-* To do: debug time zone issue utc for search by date
 * Add refresh the cache of zone distribution button with timestamp of cache async
