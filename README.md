@@ -28,3 +28,12 @@ A heart rate reporting dashboard
 * Monitoring Sessions in order of most recent implies date is important so search by date, and also user why not, no need to paginate w/ 15m
 * Add refresh the cache of zone distribution button with timestamp of cache async
 * What I was working on when I ran out of time - paginate the search results, improve the cache refresh performance
+
+## Self Post Mortem review (1/19/26)
+
+Validate date parse for search by date before sending it to ActiveRecord
+Drop into raw sql for calculating zone durations of one Monitoring Session
+Group and/or cache global min avg max bpm
+No model validation makes me uncomfortable
+Organize javascript - was rushing front end towards the end of the 3 hours
+Controller and integration tests
