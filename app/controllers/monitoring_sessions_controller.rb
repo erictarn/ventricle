@@ -29,8 +29,8 @@ class MonitoringSessionsController < ApplicationController
   def refresh_zone_distribution
     # Run the job synchronously to update the cache
     result = HeartRate.zone_percentage_distribution_sql
-    Rails.cache.write("heart_rate_zone_percentage_distribution", result, expires_in: 1.hour)
-    Rails.cache.write("heart_rate_zone_percentage_distribution_updated_at", Time.current, expires_in: 1.hour)
+    Rails.cache.write("heart_rate_zone_percentage_distribution", result, expires_in: 12.hours)
+    Rails.cache.write("heart_rate_zone_percentage_distribution_updated_at", Time.current, expires_in: 12.hours)
 
     render json: {
       data: result,

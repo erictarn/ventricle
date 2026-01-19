@@ -4,8 +4,8 @@ Rails.application.config.after_initialize do
     begin
       # Run synchronously to have cache ready immediately
       result = HeartRate.zone_percentage_distribution_sql
-      Rails.cache.write("heart_rate_zone_percentage_distribution", result, expires_in: 1.hour)
-      Rails.cache.write("heart_rate_zone_percentage_distribution_updated_at", Time.current, expires_in: 1.hour)
+      Rails.cache.write("heart_rate_zone_percentage_distribution", result, expires_in: 12.hours)
+      Rails.cache.write("heart_rate_zone_percentage_distribution_updated_at", Time.current, expires_in: 12.hours)
       Rails.logger.info "Zone distribution cache warmed up on startup: #{result}"
     rescue ActiveRecord::StatementInvalid, ActiveRecord::NoDatabaseError => e
       Rails.logger.warn "Skipping zone distribution cache warmup: #{e.message}"

@@ -27,3 +27,4 @@ A heart rate reporting dashboard
 * Put global data as a summary like system monitoring
 * Monitoring Sessions in order of most recent implies date is important so search by date, and also user why not, no need to paginate w/ 15m
 * Add refresh the cache of zone distribution button with timestamp of cache async
+* What I was working on when I ran out of time - paginate the search results, improve the cache refresh performance
