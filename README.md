@@ -1,6 +1,8 @@
 # Ventricle
 A heart rate reporting dashboard
 
+## Development process notes
+
 1. Create models, database schema, associations
 * Users have many Monitoring Sessions
 * Monitoring Sessions have many HeartRates
