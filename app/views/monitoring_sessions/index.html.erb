@@ -1,3 +1,208 @@
-<% @monitoring_sessions.each do |m| %>
-  <%= m.user.username %>
-<% end %>
+<div class="container-fluid py-4">
+  <!-- Summary Overview Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0">Zone Distribution Overview</h4>
+      <small>
+        Last Updated: <span id="last-updated" data-timestamp="<%= HeartRate.zone_distribution_last_updated&.iso8601 %>"><%= HeartRate.zone_distribution_last_updated ? "Loading..." : "Not yet calculated" %></span>
+        <a href="#" id="refresh-link" data-url="<%= refresh_zone_distribution_monitoring_sessions_path %>" class="text-white text-decoration-underline ms-2">Refresh</a>
+        <span id="refresh-spinner" class="spinner-border spinner-border-sm d-none ms-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </span>
+      </small>
+    </div>
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div id="zone-chart-container">
+            <%= pie_chart HeartRate.zone_percentage_distribution_cached, id: "zone-distribution-chart" %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="border rounded p-3">
+                <h5 class="text-muted mb-1">Min HR</h5>
+                <h2 class="mb-0"><%= HeartRate.min_bpm %></h2>
+                <small class="text-muted">bpm</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border rounded p-3">
+                <h5 class="text-muted mb-1">Avg HR</h5>
+                <h2 class="mb-0"><%= HeartRate.avg_bpm.to_f.round(1) %></h2>
+                <small class="text-muted">bpm</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border rounded p-3">
+                <h5 class="text-muted mb-1">Max HR</h5>
+                <h2 class="mb-0"><%= HeartRate.max_bpm %></h2>
+                <small class="text-muted">bpm</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sessions Section -->
+  <div class="card">
+    <div class="card-header bg-secondary text-white">
+      <h4 class="mb-0">Heart Rate Monitoring Sessions</h4>
+    </div>
+    <div class="card-body">
+      <!-- Search Form -->
+      <%= form_with url: monitoring_sessions_path, method: :get, local: true, class: "mb-4" do |f| %>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label for="search" class="form-label">Username</label>
+            <%= f.text_field :search, value: params[:search], placeholder: "Search by username", class: "form-control" %>
+          </div>
+          <div class="col-md-4">
+            <label for="date" class="form-label">Date</label>
+            <%= f.date_field :date, value: params[:date], class: "form-control", min: @min_date, max: @max_date %>
+          </div>
+          <div class="col-md-4">
+            <%= f.submit "Search", class: "btn btn-primary me-2" %>
+            <% if params[:search].present? || params[:date].present? %>
+              <%= link_to "Clear", monitoring_sessions_path, class: "btn btn-outline-secondary" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Results Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">
+          <% if params[:search].present? || params[:date].present? %>
+            Sessions
+            <% if params[:search].present? %>
+              for "<%= params[:search] %>"
+            <% end %>
+            <% if params[:date].present? %>
+              on <%= Date.parse(params[:date]).strftime("%b %d, %Y") %>
+            <% end %>
+          <% else %>
+            Most Recent Sessions
+          <% end %>
+        </h5>
+      </div>
+
+      <!-- Sessions Table -->
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>Date</th>
+        <th>Username</th>
+        <th>Min HR</th>
+        <th>Avg HR</th>
+        <th>Max HR</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @monitoring_sessions.each do |m| %>
+        <tr>
+          <td><%= m.created_at.strftime("%b %d, %Y %l:%M %p") %></td>
+          <td><%= m.user.username %></td>
+          <td><%= m.min_hr %> bpm</td>
+          <td><%= m.avg_hr.to_f.round(1) %> bpm</td>
+          <td><%= m.max_hr %> bpm</td>
+          <td><%= link_to "View", monitoring_session_path(m), class: "btn btn-sm btn-primary" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('turbo:load', function() {
+  const refreshLink = document.getElementById('refresh-link');
+  const refreshSpinner = document.getElementById('refresh-spinner');
+  const lastUpdated = document.getElementById('last-updated');
+  const chartContainer = document.getElementById('zone-chart-container');
+
+  // Function to format timestamp in user's local timezone
+  function formatTimestamp(isoString) {
+    if (!isoString) return 'Not yet calculated';
+
+    const date = new Date(isoString);
+    const options = {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+      timeZoneName: 'short'
+    };
+
+    return date.toLocaleString('en-US', options);
+  }
+
+  // Format the initial timestamp on page load
+  if (lastUpdated) {
+    const timestamp = lastUpdated.dataset.timestamp;
+    if (timestamp && timestamp.trim() !== '') {
+      lastUpdated.textContent = formatTimestamp(timestamp);
+    } else {
+      lastUpdated.textContent = 'Not yet calculated';
+    }
+  }
+
+  if (refreshLink) {
+    refreshLink.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Show spinner, hide link
+      refreshLink.classList.add('d-none');
+      refreshSpinner.classList.remove('d-none');
+
+      // Get CSRF token
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      // Make POST request
+      fetch(this.dataset.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Update the last updated timestamp with formatted local time
+        lastUpdated.dataset.timestamp = data.updated_at;
+        lastUpdated.textContent = formatTimestamp(data.updated_at);
+
+        // Update the chart using Chartkick's update method
+        const chartElement = document.querySelector('#zone-chart-container [data-chartkick-chart]');
+
+        if (chartElement && Chartkick.charts[chartElement.id]) {
+          // Get the Chartkick chart instance and update its data
+          Chartkick.charts[chartElement.id].updateData(data.data);
+        }
+
+        // Hide spinner, show link
+        refreshSpinner.classList.add('d-none');
+        refreshLink.classList.remove('d-none');
+      })
+      .catch(error => {
+        console.error('Error refreshing zone distribution:', error);
+        alert('Failed to refresh zone distribution. Please try again.');
+
+        // Hide spinner, show link even on error
+        refreshSpinner.classList.add('d-none');
+        refreshLink.classList.remove('d-none');
+      });
+    });
+  }
+});
+</script>

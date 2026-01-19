@@ -41,7 +41,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 gem "csv", "~> 3.3"
-gem "activerecord-import", "~> 2.2"
+gem "chartkick", "~> 5.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

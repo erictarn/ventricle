@@ -105,11 +105,11 @@ class HeartRate < ApplicationRecord
     total = result.total_duration.to_f
 
     {
-      zone1: (result.zone1_duration.to_f / total * 100).round(2),
-      zone2: (result.zone2_duration.to_f / total * 100).round(2),
-      zone3: (result.zone3_duration.to_f / total * 100).round(2),
-      zone4: (result.zone4_duration.to_f / total * 100).round(2),
-      unzoned: (result.unzoned_duration.to_f / total * 100).round(2)
+      "Zone 1": (result.zone1_duration.to_f / total * 100).round(2),
+      "Zone 2": (result.zone2_duration.to_f / total * 100).round(2),
+      "Zone 3": (result.zone3_duration.to_f / total * 100).round(2),
+      "Zone 4": (result.zone4_duration.to_f / total * 100).round(2),
+      "Out of Zone": (result.unzoned_duration.to_f / total * 100).round(2)
     }
   end
 
@@ -129,5 +129,10 @@ class HeartRate < ApplicationRecord
   # Manually trigger cache refresh via background job
   def self.refresh_zone_distribution_cache
     UpdateZoneDistributionCacheJob.perform_later
+  end
+
+  # Returns the timestamp when the zone distribution cache was last updated
+  def self.zone_distribution_last_updated
+    Rails.cache.read("heart_rate_zone_percentage_distribution_updated_at")
   end
 end

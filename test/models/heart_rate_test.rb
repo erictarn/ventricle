@@ -223,11 +223,11 @@ class HeartRateTest < ActiveSupport::TestCase
     # Same test as zone_percentage_distribution but using SQL version
     result = HeartRate.zone_percentage_distribution_sql
 
-    assert_equal 87.5, result[:zone1]
-    assert_equal 0.0, result[:zone2]
-    assert_equal 0.0, result[:zone3]
-    assert_equal 0.0, result[:zone4]
-    assert_equal 12.5, result[:unzoned]
+    assert_equal 87.5, result[:"Zone 1"]
+    assert_equal 0.0, result[:"Zone 2"]
+    assert_equal 0.0, result[:"Zone 3"]
+    assert_equal 0.0, result[:"Zone 4"]
+    assert_equal 12.5, result[:"Out of Zone"]
   end
 
   test "zone_percentage_distribution_sql returns same results as Ruby version" do
@@ -235,7 +235,16 @@ class HeartRateTest < ActiveSupport::TestCase
     ruby_result = HeartRate.zone_percentage_distribution
     sql_result = HeartRate.zone_percentage_distribution_sql
 
-    assert_equal ruby_result, sql_result
+    # Convert Ruby result keys to match SQL result format
+    expected = {
+      "Zone 1": ruby_result[:zone1],
+      "Zone 2": ruby_result[:zone2],
+      "Zone 3": ruby_result[:zone3],
+      "Zone 4": ruby_result[:zone4],
+      "Out of Zone": ruby_result[:unzoned]
+    }
+
+    assert_equal expected, sql_result
   end
 
   test "zone_percentage_distribution_sql returns empty hash when no heart rates exist" do
@@ -255,11 +264,11 @@ class HeartRateTest < ActiveSupport::TestCase
 
     result = HeartRate.zone_percentage_distribution_sql
 
-    assert_equal 25.0, result[:zone1]
-    assert_equal 25.0, result[:zone2]
-    assert_equal 25.0, result[:zone3]
-    assert_equal 25.0, result[:zone4]
-    assert_equal 0.0, result[:unzoned]
+    assert_equal 25.0, result[:"Zone 1"]
+    assert_equal 25.0, result[:"Zone 2"]
+    assert_equal 25.0, result[:"Zone 3"]
+    assert_equal 25.0, result[:"Zone 4"]
+    assert_equal 0.0, result[:"Out of Zone"]
   end
 
   test "zone_percentage_distribution_sql ignores nil bpm and duration values" do
@@ -269,8 +278,8 @@ class HeartRateTest < ActiveSupport::TestCase
 
     result = HeartRate.zone_percentage_distribution_sql
 
-    assert_equal 87.5, result[:zone1]
-    assert_equal 12.5, result[:unzoned]
+    assert_equal 87.5, result[:"Zone 1"]
+    assert_equal 12.5, result[:"Out of Zone"]
   end
 
   test "zone_percentage_distribution_sql handles different users with different zones" do
@@ -281,11 +290,11 @@ class HeartRateTest < ActiveSupport::TestCase
 
     result = HeartRate.zone_percentage_distribution_sql
 
-    assert_equal 50.0, result[:zone1]
-    assert_equal 50.0, result[:zone2]
-    assert_equal 0.0, result[:zone3]
-    assert_equal 0.0, result[:zone4]
-    assert_equal 0.0, result[:unzoned]
+    assert_equal 50.0, result[:"Zone 1"]
+    assert_equal 50.0, result[:"Zone 2"]
+    assert_equal 0.0, result[:"Zone 3"]
+    assert_equal 0.0, result[:"Zone 4"]
+    assert_equal 0.0, result[:"Out of Zone"]
   end
 
   # zone_percentage_distribution_cached tests
@@ -312,5 +321,23 @@ class HeartRateTest < ActiveSupport::TestCase
     assert_enqueued_with(job: UpdateZoneDistributionCacheJob) do
       HeartRate.refresh_zone_distribution_cache
     end
+  end
+
+  test "zone_distribution_last_updated returns timestamp when cache exists" do
+    # Set a timestamp in cache
+    timestamp = Time.current
+    Rails.cache.write("heart_rate_zone_percentage_distribution_updated_at", timestamp)
+
+    result = HeartRate.zone_distribution_last_updated
+
+    assert_equal timestamp, result
+  end
+
+  test "zone_distribution_last_updated returns nil when cache is empty" do
+    Rails.cache.clear
+
+    result = HeartRate.zone_distribution_last_updated
+
+    assert_nil result
   end
 end

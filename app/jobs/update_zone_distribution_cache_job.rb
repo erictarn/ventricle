@@ -6,7 +6,10 @@ class UpdateZoneDistributionCacheJob < ApplicationJob
     start_time = Time.now
 
     result = HeartRate.zone_percentage_distribution_sql
-    Rails.cache.write("heart_rate_zone_percentage_distribution", result, expires_in: 1.hour)
+
+    # Store both the data and the timestamp
+    Rails.cache.write("heart_rate_zone_percentage_distribution", result, expires_in: 12.hours)
+    Rails.cache.write("heart_rate_zone_percentage_distribution_updated_at", Time.current, expires_in: 12.hours)
 
     elapsed = Time.now - start_time
     Rails.logger.info "Zone distribution cache updated in #{elapsed.round(2)} seconds: #{result}"

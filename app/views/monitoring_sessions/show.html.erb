@@ -1,0 +1,57 @@
+<div class="container mt-3">
+  <h2>Monitoring Session Details</h2>
+  <%= link_to "← Back to Sessions", monitoring_sessions_path, class: "btn btn-secondary mb-3" %>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>Session Information</h4>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Username:</strong> <%= @monitoring_session.user.username %></p>
+          <p><strong>Date:</strong> <%= @monitoring_session.created_at.strftime("%b %d, %Y %l:%M %p") %></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Min HR:</strong> <%= @monitoring_session.min_hr %> bpm</p>
+          <p><strong>Avg HR:</strong> <%= @monitoring_session.avg_hr.to_f.round(1) %> bpm</p>
+          <p><strong>Max HR:</strong> <%= @monitoring_session.max_hr %> bpm</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>Heart Rate Over Time</h4>
+    </div>
+    <div class="card-body">
+      <%= line_chart @monitoring_session.heart_rates.order(start_time: :asc).pluck(:start_time, :bpm), xtitle: "Time", ytitle: "BPM" %>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>Zone Durations</h4>
+    </div>
+    <div class="card-body">
+      <% zone_durations = @monitoring_session.zone_durations %>
+      <div class="row">
+        <div class="col-md-3">
+          <p><strong>Zone 1:</strong> <%= (zone_durations[:zone1] / 60.0).round(1) %> minutes</p>
+        </div>
+        <div class="col-md-3">
+          <p><strong>Zone 2:</strong> <%= (zone_durations[:zone2] / 60.0).round(1) %> minutes</p>
+        </div>
+        <div class="col-md-3">
+          <p><strong>Zone 3:</strong> <%= (zone_durations[:zone3] / 60.0).round(1) %> minutes</p>
+        </div>
+        <div class="col-md-3">
+          <p><strong>Zone 4:</strong> <%= (zone_durations[:zone4] / 60.0).round(1) %> minutes</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

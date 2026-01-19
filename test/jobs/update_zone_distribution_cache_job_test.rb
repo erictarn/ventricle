@@ -25,18 +25,18 @@ class UpdateZoneDistributionCacheJobTest < ActiveJob::TestCase
     assert_not_nil cached_result
 
     # Verify it has the correct structure
-    assert_equal 87.5, cached_result[:zone1]
-    assert_equal 0.0, cached_result[:zone2]
-    assert_equal 0.0, cached_result[:zone3]
-    assert_equal 0.0, cached_result[:zone4]
-    assert_equal 12.5, cached_result[:unzoned]
+    assert_equal 87.5, cached_result[:"Zone 1"]
+    assert_equal 0.0, cached_result[:"Zone 2"]
+    assert_equal 0.0, cached_result[:"Zone 3"]
+    assert_equal 0.0, cached_result[:"Zone 4"]
+    assert_equal 12.5, cached_result[:"Out of Zone"]
   end
 
   test "job returns the calculated result" do
     result = UpdateZoneDistributionCacheJob.perform_now
 
-    assert_equal 87.5, result[:zone1]
-    assert_equal 12.5, result[:unzoned]
+    assert_equal 87.5, result[:"Zone 1"]
+    assert_equal 12.5, result[:"Out of Zone"]
   end
 
   test "job can be enqueued" do
@@ -52,5 +52,22 @@ class UpdateZoneDistributionCacheJobTest < ActiveJob::TestCase
 
     assert_equal({}, result)
     assert_equal({}, Rails.cache.read("heart_rate_zone_percentage_distribution"))
+  end
+
+  test "job stores timestamp when cache is updated" do
+    Rails.cache.clear
+
+    # Perform the job
+    before_time = Time.current
+    UpdateZoneDistributionCacheJob.perform_now
+    after_time = Time.current
+
+    # Verify timestamp was written
+    cached_timestamp = Rails.cache.read("heart_rate_zone_percentage_distribution_updated_at")
+    assert_not_nil cached_timestamp
+
+    # Verify timestamp is within expected range
+    assert cached_timestamp >= before_time
+    assert cached_timestamp <= after_time
   end
 end

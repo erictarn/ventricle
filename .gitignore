@@ -72,3 +72,4 @@ yarn-debug.log*
 /config/*.key
 
 /db/seeds/csv_data/*
+unzoned_heart_rates.csv

@@ -11,4 +11,10 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "monitoring_sessions#index"
+
+  resources :monitoring_sessions, only: [:index, :show] do
+    collection do
+      post :refresh_zone_distribution
+    end
+  end
 end
